@@ -1,0 +1,30 @@
+---
+import type { ImgAttributes } from 'astro:assets';
+export interface Props extends Omit<ImgAttributes, 'alt'> {
+  src: string;
+  size?: number;
+  alt?: string;
+}
+
+const { src, size = 24, alt, ...rest } = Astro.props;
+
+const fileName = src.split('/').pop() || 'icon.png';
+const defaultAlt = fileName.split('.').at(0) || 'icon';
+---
+
+<!-- The image is a pixel art with a 1bit color palette -->
+<img
+  class={Astro.props.class}
+  src={src}
+  width={size}
+  height={size}
+  alt={alt ?? defaultAlt}
+  {...rest}
+/>
+
+<style>
+  img {
+    image-rendering: pixelated;
+    filter: invert(70%);
+  }
+</style>

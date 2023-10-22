@@ -1,0 +1,30 @@
+---
+import bugIcon from '../assets/icons/bug.png';
+import OneBitIcon from './OneBitIcon.astro';
+---
+
+<header class="border-b border-foreground p-2">
+  <nav class="container flex items-center justify-between">
+    <a href="/">
+      <h1 class="flex gap-2 items-end">
+        <OneBitIcon class="w-6 h-6" src={bugIcon.src} />
+         var_dump
+      </h1>
+    </a>
+
+    <div class="flex gap-2">
+      <a
+        href="/about"
+        class="py-1 px-2 border-b border-transparent hover:border-foreground"
+      >
+        about
+      </a>
+      <a
+        href="/contact"
+        class="py-1 px-2 border-b border-transparent hover:border-foreground"
+      >
+        contact
+      </a>
+    </div>
+  </nav>
+</header>

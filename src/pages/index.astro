@@ -1,0 +1,42 @@
+---
+import { getFirestore } from 'firebase-admin/firestore';
+import Button from '../components/Button.astro';
+import Link from '../components/Link.astro';
+import Layout from '../layouts/Layout.astro';
+import { app } from '../lib/firebase/server';
+import type { Post } from '../lib/posts/types';
+
+const db = getFirestore(app);
+const postsRef = db.collection('posts');
+const postsSnapshot = await postsRef.get();
+
+const posts = postsSnapshot.docs.map((doc) => ({
+  id: doc.id,
+  ...doc.data(),
+})) as Post[];
+---
+
+<Layout title="var_dump">
+  <form class="flex flex-col gap-2 py-4" method="POST" action="/api/posts">
+    <h2 class="text-2xl font-bold">Add a new post</h2>
+    <label class="sr-only" for="content">Content</label>
+    <input type="text" id="content" name="content" />
+    <Button type="submit">Add content</Button>
+  </form>
+
+  <ul class="divide-y border-y border-foreground">
+    {
+      posts.map((post) => (
+        <li class="p-2 border-x border-foreground">
+          <p class="p-2 bg-foreground text-background">{post.content}</p>
+
+          <div class="flex justify-end gap-2 mt-2">
+            <Link variant="button" href={`/posts/edit/${post.id}`}>
+              Edit
+            </Link>
+          </div>
+        </li>
+      ))
+    }
+  </ul>
+</Layout>
