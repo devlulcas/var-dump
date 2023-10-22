@@ -1,30 +1,39 @@
 import type { APIRoute } from 'astro';
 import { getAuth } from 'firebase-admin/auth';
+import { z } from 'zod';
+import { zfd } from 'zod-form-data';
 import { app } from '../../../lib/firebase/server';
+
+const userRegisterFormSchema = zfd.formData({
+  email: zfd.text(z.string().email({ message: 'Use a valid e-mail' })),
+  password: zfd.text(
+    z.string().min(6, { message: 'Use at least 6 characters' })
+  ),
+  name: zfd.text(z.string().min(3, { message: 'Use at least 3 characters' })),
+});
 
 export const POST: APIRoute = async ({ request, redirect }) => {
   const auth = getAuth(app);
 
   /* Get form data */
-  const formData = await request.formData();
+  const formData = userRegisterFormSchema.safeParse(await request.formData());
 
-  const email = formData.get('email')?.toString();
-  const password = formData.get('password')?.toString();
-  const name = formData.get('name')?.toString();
-
-  if (!email || !password || !name) {
-    return new Response('Missing form data', { status: 400 });
+  if (!formData.success) {
+    const errorMessage = formData.error.flatten().formErrors.join(', ');
+    return new Response(errorMessage, { status: 400 });
   }
 
   /* Create user */
   try {
     await auth.createUser({
-      email,
-      password,
-      displayName: name,
+      email: formData.data.email,
+      password: formData.data.password,
+      displayName: formData.data.name,
     });
-  } catch (error: any) {
-    return new Response('Something went wrong', { status: 400 });
+  } catch (error) {
+    const errorMessage =
+      error instanceof Error ? error.message : 'Something went wrong';
+    return new Response(errorMessage, { status: 400 });
   }
 
   return redirect('/signin');

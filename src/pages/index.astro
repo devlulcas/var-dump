@@ -3,8 +3,11 @@ import { getFirestore } from 'firebase-admin/firestore';
 import Button from '../components/Button.astro';
 import Link from '../components/Link.astro';
 import Layout from '../layouts/Layout.astro';
+import { getAuthenticatedUser } from '../lib/firebase/auth';
 import { app } from '../lib/firebase/server';
 import type { Post } from '../lib/posts/types';
+
+const authenticatedUser = await getAuthenticatedUser(Astro.cookies);
 
 const db = getFirestore(app);
 const postsRef = db.collection('posts');
@@ -28,13 +31,29 @@ const posts = postsSnapshot.docs.map((doc) => ({
     {
       posts.map((post) => (
         <li class="p-2 border-x border-foreground">
-          <p class="p-2 bg-foreground text-background">{post.content}</p>
+          <article>
+            <header class="flex items-center gap-2">
+              <img
+                src={post.author.avatar}
+                alt=""
+                class="w-10 h-10 border border-foreground"
+              />
 
-          <div class="flex justify-end gap-2 mt-2">
-            <Link variant="button" href={`/posts/edit/${post.id}`}>
-              Edit
-            </Link>
-          </div>
+              <Link href={`/users/${post.author.id}`} class="ml-2 font-bold">
+                {post.author.name}
+              </Link>
+            </header>
+
+            <p class="p-2 bg-foreground text-background mt-1">{post.content}</p>
+
+            {authenticatedUser?.uid === post.author.id && (
+              <div class="flex justify-end gap-2 mt-2">
+                <Link variant="button" href={`/posts/edit/${post.id}`}>
+                  Edit
+                </Link>
+              </div>
+            )}
+          </article>
         </li>
       ))
     }

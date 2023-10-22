@@ -1,5 +1,6 @@
 import type { APIRoute } from 'astro';
 import { getAuth } from 'firebase-admin/auth';
+import { COOKIES_NAMES } from '../../../constants';
 import { app } from '../../../lib/firebase/server';
 
 export const GET: APIRoute = async ({ request, cookies, redirect }) => {
@@ -16,17 +17,24 @@ export const GET: APIRoute = async ({ request, cookies, redirect }) => {
   try {
     await auth.verifyIdToken(idToken);
   } catch (error) {
-    return new Response('Invalid token', { status: 401 });
+    const errorMessage =
+      error instanceof Error ? error.message : 'Invalid token';
+    return new Response(errorMessage, { status: 401 });
   }
 
   /* Create and set session cookie */
   const fiveDays = 60 * 60 * 24 * 5 * 1000;
+
   const sessionCookie = await auth.createSessionCookie(idToken, {
     expiresIn: fiveDays,
   });
 
-  cookies.set('session', sessionCookie, {
+  cookies.set(COOKIES_NAMES.SESSION, sessionCookie, {
     path: '/',
+    maxAge: fiveDays,
+    sameSite: 'lax',
+    secure: import.meta.env.NODE_ENV === 'production',
+    httpOnly: import.meta.env.NODE_ENV === 'production',
   });
 
   return redirect('/dashboard');

@@ -2,19 +2,14 @@
 import { getAuth } from 'firebase-admin/auth';
 import Layout from '../layouts/Layout.astro';
 import { app } from '../lib/firebase/server';
+import { getAuthenticatedUser } from '../lib/firebase/auth';
+import Button from '../components/Button.astro';
 
 /* Check if the user is authenticated */
-const auth = getAuth(app);
-if (Astro.cookies.has('session')) {
-  const sessionCookie = Astro.cookies.get('session');
-  const sessionCookieValue = sessionCookie
-    ? sessionCookie.value
-    : 'impossible-to-get';
-  const decodedCookie = await auth.verifySessionCookie(sessionCookieValue);
+const authenticatedUser = await getAuthenticatedUser(Astro.cookies);
 
-  if (decodedCookie) {
-    return Astro.redirect('/dashboard');
-  }
+if (authenticatedUser) {
+  return Astro.redirect('/dashboard');
 }
 ---
 
@@ -27,10 +22,10 @@ if (Astro.cookies.has('session')) {
     <input type="email" name="email" id="email" />
     <label for="password">Password</label>
     <input type="password" name="password" id="password" />
-    <button type="submit">Login</button>
+    <Button type="submit">Login</Button>
   </form>
 
-  <button id="google">Sign in with Google</button>
+  <Button variant="outline" id="google">Sign in with Google</Button>
 </Layout>
 
 <script>
@@ -45,7 +40,6 @@ if (Astro.cookies.has('session')) {
 
   const auth = getAuth(app);
 
-  // This will prevent the browser from storing session data
   auth.setPersistence(inMemoryPersistence);
 
   const form = document.querySelector<HTMLFormElement>('form');

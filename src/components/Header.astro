@@ -1,6 +1,9 @@
 ---
 import bugIcon from '../assets/icons/bug.png';
+import { getAuthenticatedUser } from '../lib/firebase/auth';
+import Link from './Link.astro';
 import OneBitIcon from './OneBitIcon.astro';
+const authenticatedUser = await getAuthenticatedUser(Astro.cookies);
 ---
 
 <header class="border-b border-foreground p-2">
@@ -12,19 +15,32 @@ import OneBitIcon from './OneBitIcon.astro';
       </h1>
     </a>
 
-    <div class="flex gap-2">
+    <div class="flex gap-2 items-center">
       <a
         href="/about"
         class="py-1 px-2 border-b border-transparent hover:border-foreground"
       >
         about
       </a>
+
       <a
         href="/contact"
         class="py-1 px-2 border-b border-transparent hover:border-foreground"
       >
         contact
       </a>
+
+      {
+        authenticatedUser ? (
+          <Link variant="button" href="/dashboard">
+            dashboard
+          </Link>
+        ) : (
+          <Link variant="button" href="/login">
+            login
+          </Link>
+        )
+      }
     </div>
   </nav>
 </header>

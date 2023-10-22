@@ -1,30 +1,23 @@
 ---
-import { getAuth } from 'firebase-admin/auth';
+import Button from '../components/Button.astro';
 import Layout from '../layouts/Layout.astro';
-import { app } from '../lib/firebase/server';
+import { getAuthenticatedUser } from '../lib/firebase/auth';
 
-const auth = getAuth(app);
+const authenticatedUser = await getAuthenticatedUser(Astro.cookies);
 
-/* Check current session */
-if (!Astro.cookies.has('session')) {
-  return Astro.redirect('/signin');
-}
-const sessionCookie = Astro.cookies.get('session');
-const sessionCookieValue = sessionCookie
-  ? sessionCookie.value
-  : 'impossible-to-get';
-const decodedCookie = await auth.verifySessionCookie(sessionCookieValue);
-const user = await auth.getUser(decodedCookie.uid);
-
-if (!user) {
+if (!authenticatedUser) {
   return Astro.redirect('/signin');
 }
 ---
 
 <Layout title="dashboard">
-  <h1>Welcome {user.displayName}</h1>
+  <h1 class="text-4xl font-bold text-center">
+    Welcome {authenticatedUser.displayName}
+  </h1>
+
   <p>We are happy to see you here</p>
+
   <form action="/api/auth/signout">
-    <button type="submit">Sign out</button>
+    <Button type="submit">Sign out</Button>
   </form>
 </Layout>

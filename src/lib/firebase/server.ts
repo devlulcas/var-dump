@@ -2,6 +2,7 @@ import type { ServiceAccount } from 'firebase-admin';
 import { cert, getApps, initializeApp } from 'firebase-admin/app';
 
 const activeApps = getApps();
+
 const serviceAccount = {
   type: 'service_account',
   project_id: import.meta.env.FIREBASE_PROJECT_ID,
@@ -18,7 +19,5 @@ const serviceAccount = {
 
 export const app =
   activeApps.length === 0
-    ? initializeApp({
-        credential: cert(serviceAccount as ServiceAccount),
-      })
+    ? initializeApp({ credential: cert(serviceAccount as ServiceAccount) })
     : activeApps[0];

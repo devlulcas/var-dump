@@ -3,6 +3,8 @@ import Layout from '../../../layouts/Layout.astro';
 import { app } from '../../../lib/firebase/server';
 import { getFirestore } from 'firebase-admin/firestore';
 import type { Post } from '../../../lib/posts/types';
+import { FIREBASE_COLLECTIONS } from '../../../constants';
+import { getAuthenticatedUser } from '../../../lib/firebase/auth';
 
 const { id } = Astro.params;
 
@@ -10,8 +12,14 @@ if (!id) {
   return Astro.redirect('/404');
 }
 
+const authenticatedUser = await getAuthenticatedUser(Astro.cookies);
+
+if (!authenticatedUser) {
+  return Astro.redirect('/login');
+}
+
 const db = getFirestore(app);
-const postsRef = db.collection('posts');
+const postsRef = db.collection(FIREBASE_COLLECTIONS.POSTS);
 const postSnapshot = await postsRef.doc(id).get();
 
 if (!postSnapshot.exists) {
