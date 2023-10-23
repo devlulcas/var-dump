@@ -16,7 +16,7 @@ export const POST: APIRoute = async ({ request, redirect, cookies }) => {
   const authenticatedUser = await getAuthenticatedUser(cookies);
 
   if (!authenticatedUser) {
-    return new Response('Unauthorized', { status: 401 });
+    return redirect('/signin');
   }
 
   const newPost: NewPost = {

@@ -5,6 +5,10 @@ import { getFirestore } from 'firebase-admin/firestore';
 import type { Post } from '../../../lib/posts/types';
 import { FIREBASE_COLLECTIONS } from '../../../constants';
 import { getAuthenticatedUser } from '../../../lib/firebase/auth';
+import { Editor } from '../../../islands/Editor';
+import Button from '../../../components/Button.astro';
+import OneBitIcon from '../../../components/OneBitIcon.astro';
+import pencilIcon from '../../../assets/icons/pencil.png';
 
 const { id } = Astro.params;
 
@@ -29,16 +33,22 @@ if (!postSnapshot.exists) {
 const post = postSnapshot.data() as Post;
 ---
 
-<Layout title="Edit {post.name}">
+<Layout title={`Edit a post`}>
   <p>Here you can edit or delete your post's data.</p>
 
-  <form method="POST" action={`/api/posts/${id}`}>
-    <label for="content">content</label>
-    <input type="text" id="content" name="content" value={post.content} />
-    <button type="submit">Edit post</button>
+  <form
+    class="flex flex-col gap-2 py-4"
+    method="POST"
+    action={`/api/posts/${id}`}
+  >
+    <Editor name="content" defaultContent={post.content} client:load />
+    <Button type="submit">
+      <OneBitIcon src={pencilIcon.src} class="w-5 h-5 mr-2 filter-none" />
+      <span>save content</span>
+    </Button>
   </form>
 
-  <button type="button" id="delete-document">Delete</button>
+  <Button variant="outline" type="button" id="delete-document">Delete</Button>
 </Layout>
 
 <script>

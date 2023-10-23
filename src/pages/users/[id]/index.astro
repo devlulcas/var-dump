@@ -1,0 +1,36 @@
+---
+import { getFirestore } from 'firebase-admin/firestore';
+import PostPreview from '../../../components/PostPreview.astro';
+import Layout from '../../../layouts/Layout.astro';
+import { getAuthenticatedUser } from '../../../lib/firebase/auth';
+import { app } from '../../../lib/firebase/server';
+import type { Post } from '../../../lib/posts/types';
+
+const authenticatedUser = await getAuthenticatedUser(Astro.cookies);
+
+const userId = Astro.params.id;
+
+const db = getFirestore(app);
+const postsRef = db.collection('posts');
+const postsByUserIdSnapshot = await postsRef
+  .where('author.id', '==', userId)
+  .get();
+
+const posts = postsByUserIdSnapshot.docs.map((doc) => ({
+  id: doc.id,
+  ...doc.data(),
+})) as Post[];
+---
+
+<Layout title="var_dump">
+  <div class="h-6"></div>
+  <ul class="divide-y divide-foreground border-y border-foreground">
+    {
+      posts.map((post) => (
+        <li>
+          <PostPreview post={post} currentUser={authenticatedUser} />
+        </li>
+      ))
+    }
+  </ul>
+</Layout>

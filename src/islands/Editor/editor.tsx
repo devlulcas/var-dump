@@ -59,7 +59,7 @@ export function Editor({
     <>
       <EditorContent
         className={cn(
-          'prose min-w-full h-full text-background bg-foreground',
+          'prose min-w-full h-full text-foreground bg-background',
           className
         )}
         editor={editor}

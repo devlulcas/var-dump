@@ -1,18 +1,50 @@
 ---
+import Button from '../components/Button.astro';
 import Layout from '../layouts/Layout.astro';
 ---
 
 <Layout title="Register">
-  <h1>Register</h1>
-  <p>Already have an account? <a href="/signin">Sign in</a></p>
+  <h2 class="text-2xl font-bold">Register</h2>
 
-  <form action="/api/auth/register" method="post">
-    <label for="name">Name</label>
-    <input type="text" name="name" id="name" />
-    <label for="email" for="email">Email</label>
-    <input type="email" name="email" id="email" />
-    <label for="password">Password</label>
-    <input type="password" name="password" id="password" />
-    <button type="submit">Login</button>
+  <p class="text-sm text-foreground-light mb-2">
+    Already have an account? <a href="/signin">Sign in</a>
+  </p>
+
+  <form
+    action="/api/auth/register"
+    method="POST"
+    class="flex flex-col gap-2 mb-8"
+  >
+    <div>
+      <label class="text-sm" for="name">name</label>
+      <input
+        class="p-2 border border-foreground w-full focus:outline-none focus:border-dotted"
+        type="text"
+        name="name"
+        id="name"
+      />
+    </div>
+
+    <div>
+      <label class="text-sm" for="email">Email</label>
+      <input
+        class="p-2 border border-foreground w-full focus:outline-none focus:border-dotted"
+        type="email"
+        name="email"
+        id="email"
+      />
+    </div>
+
+    <div>
+      <label class="text-sm" for="password">Password</label>
+      <input
+        class="p-2 border border-foreground w-full focus:outline-none focus:border-dotted"
+        type="password"
+        name="password"
+        id="password"
+      />
+    </div>
+
+    <Button type="submit">Register</Button>
   </form>
 </Layout>
