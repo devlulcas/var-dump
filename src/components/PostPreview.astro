@@ -1,0 +1,44 @@
+---
+import type { UserRecord } from 'firebase-admin/auth';
+import { Editor } from '../islands/Editor';
+import type { Post } from '../lib/posts/types';
+import Link from './Link.astro';
+
+interface Props {
+  post: Post;
+  currentUser?: UserRecord | null;
+}
+
+const { post, currentUser } = Astro.props;
+---
+
+<article class="p-2 border-x border-foreground">
+  <header class="flex items-center gap-2">
+    <img
+      src={post.author.avatar}
+      alt=""
+      class="w-10 h-10 border border-foreground"
+    />
+
+    <Link href={`/users/${post.author.id}`} class="ml-2 font-bold">
+      {post.author.name}
+    </Link>
+
+    {
+      currentUser?.uid === post.author.id && (
+        <div class="flex justify-end gap-2 ml-auto">
+          <Link variant="button" href={`/posts/edit/${post.id}`}>
+            Edit
+          </Link>
+        </div>
+      )
+    }
+  </header>
+
+  <Editor
+    client:load
+    defaultContent={post.content}
+    editable={false}
+    className="mt-2"
+  />
+</article>

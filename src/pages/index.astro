@@ -1,7 +1,10 @@
 ---
 import { getFirestore } from 'firebase-admin/firestore';
+import pencilIcon from '../assets/icons/pencil.png';
 import Button from '../components/Button.astro';
-import Link from '../components/Link.astro';
+import OneBitIcon from '../components/OneBitIcon.astro';
+import PostPreview from '../components/PostPreview.astro';
+import { Editor } from '../islands/Editor';
 import Layout from '../layouts/Layout.astro';
 import { getAuthenticatedUser } from '../lib/firebase/auth';
 import { app } from '../lib/firebase/server';
@@ -21,39 +24,19 @@ const posts = postsSnapshot.docs.map((doc) => ({
 
 <Layout title="var_dump">
   <form class="flex flex-col gap-2 py-4" method="POST" action="/api/posts">
-    <h2 class="text-2xl font-bold">Add a new post</h2>
-    <label class="sr-only" for="content">Content</label>
-    <input type="text" id="content" name="content" />
-    <Button type="submit">Add content</Button>
+    <h2 class="text-2xl font-bold">add a new post</h2>
+    <Editor name="content" client:load />
+    <Button type="submit">
+      <OneBitIcon src={pencilIcon.src} class="w-5 h-5 mr-2 filter-none" />
+      <span>save content</span>
+    </Button>
   </form>
 
   <ul class="divide-y border-y border-foreground">
     {
       posts.map((post) => (
-        <li class="p-2 border-x border-foreground">
-          <article>
-            <header class="flex items-center gap-2">
-              <img
-                src={post.author.avatar}
-                alt=""
-                class="w-10 h-10 border border-foreground"
-              />
-
-              <Link href={`/users/${post.author.id}`} class="ml-2 font-bold">
-                {post.author.name}
-              </Link>
-            </header>
-
-            <p class="p-2 bg-foreground text-background mt-1">{post.content}</p>
-
-            {authenticatedUser?.uid === post.author.id && (
-              <div class="flex justify-end gap-2 mt-2">
-                <Link variant="button" href={`/posts/edit/${post.id}`}>
-                  Edit
-                </Link>
-              </div>
-            )}
-          </article>
+        <li>
+          <PostPreview post={post} currentUser={authenticatedUser} />
         </li>
       ))
     }
