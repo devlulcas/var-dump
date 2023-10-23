@@ -10,6 +10,9 @@
     "astro": "astro"
   },
   "dependencies": {
+    "@astrojs/react": "^3.0.3",
+    "@astrojs/tailwind": "^5.0.2",
+    "@astrojs/vercel": "^5.0.2",
     "@tiptap/core": "^2.1.12",
     "@tiptap/pm": "^2.1.12",
     "@tiptap/react": "^2.1.12",
@@ -27,9 +30,6 @@
     "zod-form-data": "^2.0.2"
   },
   "devDependencies": {
-    "@astrojs/react": "^3.0.3",
-    "@astrojs/tailwind": "^5.0.2",
-    "@astrojs/vercel": "^5.0.2",
     "@tailwindcss/typography": "^0.5.10",
     "@types/react": "^18.2.31",
     "@types/react-dom": "^18.2.14",
