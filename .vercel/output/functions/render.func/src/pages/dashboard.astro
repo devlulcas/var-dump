@@ -1,0 +1,23 @@
+---
+import Button from '../components/Button.astro';
+import Layout from '../layouts/Layout.astro';
+import { getAuthenticatedUser } from '../lib/firebase/auth';
+
+const authenticatedUser = await getAuthenticatedUser(Astro.cookies);
+
+if (!authenticatedUser) {
+  return Astro.redirect('/signin');
+}
+---
+
+<Layout title="dashboard">
+  <h1 class="text-4xl font-bold text-center">
+    Welcome {authenticatedUser.displayName}
+  </h1>
+
+  <p>We are happy to see you here</p>
+
+  <form action="/api/auth/signout">
+    <Button type="submit">Sign out</Button>
+  </form>
+</Layout>
